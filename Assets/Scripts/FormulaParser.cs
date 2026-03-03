@@ -6,9 +6,9 @@ public class FormulaParser
     {
         return id switch
         {
-            0 => (cps, level) => cps + level,
-            1 => (cps, level) => cps * 2 * level,
-            2 => (cps, level) => (long)(cps * 1.2 * level),
+            0 => cps => cps + 1,
+            1 => cps => cps * 2,
+            2 => cps => (long)(cps * 1.2),
             _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)
         };
     }

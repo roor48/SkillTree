@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: ForestData_0
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
   id: 0
-  costs: 000000000a00000019000000
+  costs: 00000000000000000a000000000000001900000000000000
+  childrenIds: 0100000002000000

@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: ForestData_2
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
-  id: 1
-  costs: 3200000064000000dc000000
+  id: 2
+  costs: 9001000000000000f4010000000000002003000000000000e803000000000000dc05000000000000
+  childrenIds: 

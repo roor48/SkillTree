@@ -1,23 +1,26 @@
 
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public delegate long ExecuteStrategy(long cps, int level);
+public delegate long ExecuteStrategy(long cps);
 
 public class Element : MonoBehaviour
 {
     public int ID { get; private set; }
     
-    public int[] costs;
-    public int level { get; private set; }
-    public int maxLevel;
-    
-    public string StrategyString { get; private set; }
+    public long[] costs;
+    private int maxLevel;
+    private int level;
+
+    private string strategyString;
     private ExecuteStrategy executeStrategy;
     
     private TextMeshProUGUI levelText;
     private TextMeshProUGUI formulaText;
     private TextMeshProUGUI costText;
+
+    private List<Element> childElements;
 
     public void Initialize(ElementData data)
     {
@@ -26,14 +29,42 @@ public class Element : MonoBehaviour
         this.level = 0;
         this.maxLevel = data.costs.Length;
         
-        this.StrategyString = FormulaParser.GetFormulaString(data.id);
+        this.strategyString = FormulaParser.GetFormulaString(data.id);
         this.executeStrategy = FormulaParser.GetFormula(data.id);
         
         this.levelText = transform.Find("LevelText").GetComponent<TextMeshProUGUI>();
         this.formulaText = transform.Find("FormulaText").GetComponent<TextMeshProUGUI>();
         this.costText = transform.Find("CostText").GetComponent<TextMeshProUGUI>();
+        
+        childElements = new List<Element>();
     }
 
+    public void AddChild(Element element)
+    {
+        childElements.Add(element);
+    }
+
+    public void EnableChildren()
+    {
+        foreach (Element element in childElements)
+        {
+            element.transform.parent.gameObject.SetActive(true);
+        }
+    }
+
+    public bool IsMaxLevel()
+    {
+        return level >= maxLevel;
+    }
+    
+    public long GetUpgradeCost()
+    {
+        if (IsMaxLevel())
+            return -1; // Max Level
+        
+        return costs[level];
+    }
+    
     public void Upgrade()
     {
         if (level >= maxLevel)
@@ -47,7 +78,7 @@ public class Element : MonoBehaviour
     public void RefreshText()
     {
         levelText.text = $"{level} / {maxLevel}";
-        formulaText.text = StrategyString;
+        formulaText.text = strategyString;
         costText.text = level < maxLevel ? $"{costs[level]}$" : "Max Level";       
     }
 
@@ -55,9 +86,12 @@ public class Element : MonoBehaviour
     {
         if (level == 0)
             return cps;
-        
-        long value = executeStrategy(cps, level);
-        Debug.Log(gameObject.name + ":  " + "cps: " + cps + ", value: " + value);
+
+        long value = cps;
+        for (int i = 0; i < level; i++)
+        {
+            value = executeStrategy(value);
+        }
         return value;
     }
 }
@@ -67,9 +101,11 @@ public class Element : MonoBehaviour
 public class ElementData : ScriptableObject
 {
     public int id;
-    public int[] costs;
+    public long[] costs;
+    public int[] childrenIds;
 }
 
 /* todo:
-    1. next Element 추가해서 다음 element SetActive(true) 할 수 있도록 하기
+    1. 숫자 계산 클래스 생성
+        Sexvigintillion범위 안에 들어오면 단위로 표현, 아니면 e표현
 */

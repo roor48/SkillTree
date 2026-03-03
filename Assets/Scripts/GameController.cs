@@ -6,14 +6,17 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI cashText;
+    [SerializeField] private TextMeshProUGUI cpsText;
+    
     private List<Element> elements = new();
 
     private long cash;
 
     private bool STOP = false;
     
-    private void Start()
+    public void StartCycle()
     {
+        cash = 10000;
         STOP = false;
         RefreshUI();
         StartCoroutine(Cycle());
@@ -28,16 +31,23 @@ public class GameController : MonoBehaviour
         {
             yield return wait;
 
-            long cash = 0; // cash per second
-            
-            foreach (var element in elements)
-            {
-                cash = element.Execute(cash);
-            }
+            long cash = CalculateCPS();
             Debug.Log("cash total: " + cash);
             this.cash += cash;
             RefreshUI();
         }
+    }
+
+    private long CalculateCPS()
+    {
+        long cash = 0; // cash per second
+            
+        foreach (var element in elements)
+        {
+            cash = element.Execute(cash);
+        }
+
+        return cash;
     }
     
     public void AddElement(Element element)
@@ -64,9 +74,9 @@ public class GameController : MonoBehaviour
 
     public void OnBuy(int id)
     {
-        if (elements[id].level >= elements[id].maxLevel) 
+        if (elements[id].IsMaxLevel()) 
             return;
-        int cost = elements[id].costs[elements[id].level];
+        long cost = elements[id].GetUpgradeCost();
         if (cash < cost)
             return;
 
@@ -75,11 +85,14 @@ public class GameController : MonoBehaviour
         
         // ui 변경
         RefreshUI();
+        
         // add upgrade effect
+        elements[id].EnableChildren();
     }
     
     private void RefreshUI()
     {
         cashText.text = $"Currency: {cash}$";
+        cpsText.text = $"Cash/s: {CalculateCPS()}$";
     }
 }
