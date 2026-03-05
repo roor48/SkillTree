@@ -10,13 +10,13 @@ public class GameController : MonoBehaviour
     
     private List<Element> elements = new();
 
-    private long cash;
+    private BigNumber cash;
 
     private bool STOP = false;
     
     public void StartCycle()
     {
-        cash = 10000;
+        cash = new BigNumber(1000);
         STOP = false;
         RefreshUI();
         StartCoroutine(Cycle());
@@ -31,23 +31,23 @@ public class GameController : MonoBehaviour
         {
             yield return wait;
 
-            long cash = CalculateCPS();
+            BigNumber cash = CalculateCPS();
             Debug.Log("cash total: " + cash);
             this.cash += cash;
             RefreshUI();
         }
     }
 
-    private long CalculateCPS()
+    private BigNumber CalculateCPS()
     {
-        long cash = 0; // cash per second
+        BigNumber cps = new BigNumber(); // cash per second
             
         foreach (var element in elements)
         {
-            cash = element.Execute(cash);
+            cps = element.Execute(cps);
         }
 
-        return cash;
+        return cps;
     }
     
     public void AddElement(Element element)
@@ -76,8 +76,8 @@ public class GameController : MonoBehaviour
     {
         if (elements[id].IsMaxLevel()) 
             return;
-        long cost = elements[id].GetUpgradeCost();
-        if (cash < cost)
+        BigNumber cost = elements[id].GetUpgradeCost();
+        if (cost == null || cash < cost)
             return;
 
         elements[id].Upgrade();

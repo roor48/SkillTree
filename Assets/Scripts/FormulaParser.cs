@@ -8,7 +8,7 @@ public class FormulaParser
         {
             0 => cps => cps + 1,
             1 => cps => cps * 2,
-            2 => cps => (long)(cps * 1.2),
+            2 => cps => cps * 1.2,
             _ => throw new ArgumentOutOfRangeException(nameof(id), id, null)
         };
     }

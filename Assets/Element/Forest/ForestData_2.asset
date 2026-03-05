@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: ForestData_2
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
   id: 2
-  costs: 9001000000000000f4010000000000002003000000000000e803000000000000dc05000000000000
+  costs:
+  - mantissa: 4
+    exponent: 2
   childrenIds: 

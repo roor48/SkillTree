@@ -1,8 +1,8 @@
-
+[System.Serializable]
 public class BigNumber
 {
-    public double mantissa;  // 가수 (1.0 ~ 9.999)
-    public long exponent;    // 지수
+    [UnityEngine.SerializeField] private double mantissa;  // 가수 (1.0 ~ 9.999)
+    [UnityEngine.SerializeField] private long exponent;    // 지수
 
     public BigNumber()
     {
@@ -41,8 +41,8 @@ public class BigNumber
             exponent += adjustment;
         }
     }
-
-    public string ToUnitString()
+    
+    public override string ToString()
     {
         // 1e3 미만은 일반 숫자로 표시
         if (exponent < 3)
@@ -143,7 +143,7 @@ public class BigNumber
         if (a.exponent == b.exponent)
             return new BigNumber(a.mantissa + b.mantissa, a.exponent);
 
-        long expDiff = a.exponent - b.exponent;
+        long expDiff = System.Math.Abs(a.exponent - b.exponent);
         double adjustedB = b.mantissa * System.Math.Pow(10, -expDiff);
         return new BigNumber(a.mantissa + adjustedB, a.exponent);
     }
@@ -151,6 +151,19 @@ public class BigNumber
     {
         BigNumber scalarBig = new BigNumber(scalar);
         return a + scalarBig;
+    }
+    
+    public static BigNumber operator-(BigNumber a, BigNumber b)
+    {
+        if (System.Math.Abs(a.exponent - b.exponent) > 15)
+            return a.exponent > b.exponent ? a : new BigNumber(-b.mantissa, b.exponent);
+
+        if (a.exponent == b.exponent)
+            return new BigNumber(a.mantissa - b.mantissa, a.exponent);
+
+        long expDiff = System.Math.Abs(a.exponent - b.exponent);
+        double adjustedB = b.mantissa * System.Math.Pow(10, -expDiff);
+        return new BigNumber(a.mantissa - adjustedB, a.exponent);
     }
 
     public static BigNumber operator*(BigNumber a, BigNumber b)
@@ -184,16 +197,6 @@ public class BigNumber
     {
         BigNumber bBig = new BigNumber(scalar);
         return a < bBig;
-    }
-
-    public static bool operator==(BigNumber a, BigNumber b)
-    {
-        return a != null && b != null && a.exponent == b.exponent && System.Math.Abs(a.mantissa - b.mantissa) < 1e-10;
-    }
-
-    public static bool operator!=(BigNumber a, BigNumber b)
-    {
-        return !(a == b);
     }
 
     public override bool Equals(object obj)

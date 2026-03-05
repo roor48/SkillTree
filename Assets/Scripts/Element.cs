@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public delegate long ExecuteStrategy(long cps);
+public delegate BigNumber ExecuteStrategy(BigNumber cps);
 
 public class Element : MonoBehaviour
 {
     public int ID { get; private set; }
     
-    public long[] costs;
+    public BigNumber[] costs;
     private int maxLevel;
     private int level;
 
@@ -57,10 +57,10 @@ public class Element : MonoBehaviour
         return level >= maxLevel;
     }
     
-    public long GetUpgradeCost()
+    public BigNumber GetUpgradeCost()
     {
         if (IsMaxLevel())
-            return -1; // Max Level
+            return null; // Max Level
         
         return costs[level];
     }
@@ -82,12 +82,12 @@ public class Element : MonoBehaviour
         costText.text = level < maxLevel ? $"{costs[level]}$" : "Max Level";       
     }
 
-    public long Execute(long cps) // cps: cash per second
+    public BigNumber Execute(BigNumber cps) // cps: cash per second
     {
         if (level == 0)
             return cps;
 
-        long value = cps;
+        BigNumber value = cps;
         for (int i = 0; i < level; i++)
         {
             value = executeStrategy(value);
@@ -101,7 +101,7 @@ public class Element : MonoBehaviour
 public class ElementData : ScriptableObject
 {
     public int id;
-    public long[] costs;
+    public BigNumber[] costs;
     public int[] childrenIds;
 }
 
