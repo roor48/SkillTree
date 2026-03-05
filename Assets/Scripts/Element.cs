@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -103,6 +104,14 @@ public class ElementData : ScriptableObject
     public int id;
     public BigNumber[] costs;
     public int[] childrenIds;
+
+    private void OnValidate()
+    {
+        foreach (var cost in costs)
+        {
+            cost.Normalize();
+        }
+    }
 }
 
 /* todo:

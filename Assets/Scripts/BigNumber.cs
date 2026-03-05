@@ -22,7 +22,7 @@ public class BigNumber
         Normalize();
     }
 
-    private void Normalize()
+    public void Normalize()
     {
         if (mantissa == 0.0)
         {
@@ -30,42 +30,23 @@ public class BigNumber
             return;
         }
 
+        // 1.0 <= |mantissa| < 10.0
+        double absMantissa = System.Math.Abs(mantissa);
+        if (absMantissa is >= 1.0 and < 10.0)
+        {
+            return;
+        }
+
         // mantissa를 1.0~9.999 범위로 조정
         // 예: mantissa=1234567 → log10(1234567) ≈ 6.09 → floor(6.09) = 6
         //     → 10^6으로 나눔 → mantissa=1.234567, exponent+=6
-        int adjustment = (int)System.Math.Floor(System.Math.Log10(System.Math.Abs(mantissa)));
+        int adjustment = (int)System.Math.Floor(System.Math.Log10(absMantissa));
         
         if (adjustment != 0)
         {
             mantissa /= System.Math.Pow(10, adjustment);
             exponent += adjustment;
         }
-    }
-    
-    public override string ToString()
-    {
-        // 1e3 미만은 일반 숫자로 표시
-        if (exponent < 3)
-        {
-            return (mantissa * System.Math.Pow(10, exponent)).ToString("F0");
-        }
-
-        // 1e93 미만: 단위 사용
-        // mantissa는 이미 1.0~9.999 범위로 정규화됨
-        if (exponent < 93)
-        {
-            // exponent를 3의 배수로 조정
-            long exponentRemainder = exponent % 3;
-            long exponentBase = exponent - exponentRemainder;
-            
-            NumberUnit unit = GetUnit(exponentBase);
-            double displayValue = mantissa * System.Math.Pow(10, exponentRemainder);
-            return $"{displayValue:F2}{GetUnitSymbol(unit)}";
-        }
-
-        // 1e93 이상: e표기법, 지수를 단위로 표현
-        // 예: mantissa=5.5, exponent=12345 → 5.5e12.34K
-        return $"{mantissa:F2}e{FormatExponent(exponent)}";
     }
 
     /// <summary>
@@ -209,6 +190,32 @@ public class BigNumber
     public override int GetHashCode()
     {
         return mantissa.GetHashCode() ^ exponent.GetHashCode();
+    }
+    
+    public override string ToString()
+    {
+        // 1e3 미만은 일반 숫자로 표시
+        if (exponent < 3)
+        {
+            return (mantissa * System.Math.Pow(10, exponent)).ToString("F0");
+        }
+
+        // 1e93 미만: 단위 사용
+        // mantissa는 이미 1.0~9.999 범위로 정규화됨
+        if (exponent < 93)
+        {
+            // exponent를 3의 배수로 조정
+            long exponentRemainder = exponent % 3;
+            long exponentBase = exponent - exponentRemainder;
+            
+            NumberUnit unit = GetUnit(exponentBase);
+            double displayValue = mantissa * System.Math.Pow(10, exponentRemainder);
+            return $"{displayValue:F2}{GetUnitSymbol(unit)}";
+        }
+
+        // 1e93 이상: e표기법, 지수를 단위로 표현
+        // 예: mantissa=5.5, exponent=12345 → 5.5e12.34K
+        return $"{mantissa:F2}e{FormatExponent(exponent)}";
     }
 }
 

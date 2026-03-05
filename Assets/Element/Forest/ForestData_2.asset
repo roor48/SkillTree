@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
   id: 2
   costs:
+  - mantissa: 3
+    exponent: 2
+  - mantissa: 3.5
+    exponent: 2
   - mantissa: 4
     exponent: 2
   childrenIds: 
