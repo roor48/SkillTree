@@ -51,31 +51,6 @@ public class BigNumber
         }
     }
 
-    /// <summary>
-    /// 지수를 단위로 표현
-    /// 예: exp=12345 → 12.34K (12345를 12.34 * 1000으로 표현)
-    /// </summary>
-    /// <param name="exp">지수</param>
-    /// <returns>string</returns>
-    private string FormatExponent(long exp)
-    {
-        // 지수가 1000 미만이면 그냥 숫자로
-        if (exp < 1000)
-        {
-            return exp.ToString();
-        }
-        
-        // exp의 자릿수 계산
-        int expDigits = (int)Math.Floor(Math.Log10(exp));
-        
-        // expDigits를 3의 배수로 조정
-        long unitExponent = expDigits - (expDigits % 3);
-        double adjustedExp = exp / Math.Pow(10, unitExponent);
-        
-        NumberUnit unit = GetUnit(unitExponent);
-        return $"{adjustedExp:F2}{GetUnitSymbol(unit)}";
-    }
-
     private NumberUnit GetUnit(long exp)
     {
         return (NumberUnit)((exp / 3) - 1);
@@ -139,7 +114,17 @@ public class BigNumber
     }
     public BigNumber Root(double n)
     {
-        return Power(1.0 / n);
+        return this.Power(1.0 / n);
+    }
+
+    private const double LOG_10 = 2.302585092994046; // ln(10)
+    public double Log()
+    {
+        return Math.Log(this.mantissa) + this.exponent * LOG_10;
+    }
+    public double Log(double value)
+    {
+        return this.Log() / Math.Log(value);
     }
     
     public static BigNumber operator+(BigNumber a, BigNumber b)
@@ -256,6 +241,30 @@ public class BigNumber
         return mantissa.GetHashCode() ^ exponent.GetHashCode();
     }
     
+    /// <summary>
+    /// 지수를 단위로 표현
+    /// 예: exp=12345 → 12.34K (12345를 12.34 * 1000으로 표현)
+    /// </summary>
+    /// <param name="exp">지수</param>
+    /// <returns>string</returns>
+    private string FormatExponent(long exp)
+    {
+        // 지수가 1000 미만이면 그냥 숫자로
+        if (exp < 1000)
+        {
+            return exp.ToString();
+        }
+        
+        // exp의 자릿수 계산
+        int expDigits = (int)Math.Floor(Math.Log10(exp));
+        
+        // expDigits를 3의 배수로 조정
+        long unitExponent = expDigits - (expDigits % 3);
+        double adjustedExp = exp / Math.Pow(10, unitExponent);
+        
+        NumberUnit unit = GetUnit(unitExponent);
+        return $"{adjustedExp:F2}{GetUnitSymbol(unit)}";
+    }
     public override string ToString()
     {
         // 1e3 미만은 일반 숫자로 표시
