@@ -117,7 +117,31 @@ public class BigNumber
             _ => ""
         };
     }
-
+    
+    public BigNumber Power(double power)
+    {
+        double ep = exponent * power;
+        long integer = (long)Math.Floor(ep);
+        double frac = ep - integer;
+        
+        double mt = Math.Pow(this.mantissa, power) * Math.Pow(10, frac);
+        
+        return new BigNumber(mt, integer);
+    }
+    public BigNumber Sqrt()
+    {
+        double mt = Math.Sqrt(this.mantissa);
+        if ((exponent & 1) == 1)
+        {
+            mt *= Math.Sqrt(10);
+        }
+        return new BigNumber(mt, exponent / 2);
+    }
+    public BigNumber Root(double n)
+    {
+        return Power(1.0 / n);
+    }
+    
     public static BigNumber operator+(BigNumber a, BigNumber b)
     {
         if (a.exponent == b.exponent)
@@ -185,6 +209,15 @@ public class BigNumber
     public static BigNumber operator*(BigNumber a, double scalar)
     {
         return new BigNumber(a.mantissa * scalar, a.exponent);
+    }
+    
+    public static BigNumber operator/(BigNumber a, BigNumber b)
+    {
+        return new BigNumber(a.mantissa / b.mantissa, a.exponent - b.exponent);
+    }
+    public static BigNumber operator/(BigNumber a, double scalar)
+    {
+        return new BigNumber(a.mantissa / scalar, a.exponent);
     }
 
     public static bool operator>(BigNumber a, BigNumber b)
