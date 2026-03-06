@@ -96,25 +96,3 @@ public class Element : MonoBehaviour
         return value;
     }
 }
-
-[CreateAssetMenu(fileName = "ElementData", menuName = "Game/Element Data")]
-[System.Serializable]
-public class ElementData : ScriptableObject
-{
-    public int id;
-    public BigNumber[] costs;
-    public int[] childrenIds;
-
-    private void OnValidate()
-    {
-        foreach (var cost in costs)
-        {
-            cost.Normalize();
-        }
-    }
-}
-
-/* todo:
-    1. 숫자 계산 클래스 생성
-        Sexvigintillion범위 안에 들어오면 단위로 표현, 아니면 e표현
-*/

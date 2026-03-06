@@ -10,12 +10,20 @@ public class ElementManager : MonoBehaviour
     [SerializeField] private Transform[] elementPositions;
     
     private Dictionary<int, Element> elements;
-    
     private GameController gameController;
     public void InitElementManager(GameController gameController)
     {
         this.gameController = gameController;
         elements = new Dictionary<int, Element>();
+        
+        foreach (var elementData in elementDatas)
+        {
+            foreach (var cost in elementData.costs)
+            {
+                cost.Normalize();
+            }
+        }
+        
         CreateElement();
         MakeTree();
         AddToGameController();

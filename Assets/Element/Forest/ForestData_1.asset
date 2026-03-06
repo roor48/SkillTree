@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: b8b3e925149cf594faa9a493cb1b1674, type: 3}
   m_Name: ForestData_1
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
   id: 1
   costs:
-  - mantissa: 4
-    exponent: 1
-  - mantissa: 8
-    exponent: 1
-  - mantissa: 1.5
-    exponent: 2
+  - mantissa: 50
+    exponent: 0
+  - mantissa: 80
+    exponent: 0
+  - mantissa: 150
+    exponent: 0
   childrenIds: 

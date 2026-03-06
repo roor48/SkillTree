@@ -1,5 +1,6 @@
 using System;
 
+[Serializable]
 public class BigNumber
 {
     [UnityEngine.SerializeField] private double mantissa;  // 가수 (1.0 ~ 9.999)
