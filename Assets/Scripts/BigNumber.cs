@@ -1,4 +1,5 @@
-[System.Serializable]
+using System;
+
 public class BigNumber
 {
     [UnityEngine.SerializeField] private double mantissa;  // 가수 (1.0 ~ 9.999)
@@ -31,7 +32,7 @@ public class BigNumber
         }
 
         // 1.0 <= |mantissa| < 10.0
-        double absMantissa = System.Math.Abs(mantissa);
+        double absMantissa = Math.Abs(mantissa);
         if (absMantissa is >= 1.0 and < 10.0)
         {
             return;
@@ -40,11 +41,11 @@ public class BigNumber
         // mantissa를 1.0~9.999 범위로 조정
         // 예: mantissa=1234567 → log10(1234567) ≈ 6.09 → floor(6.09) = 6
         //     → 10^6으로 나눔 → mantissa=1.234567, exponent+=6
-        int adjustment = (int)System.Math.Floor(System.Math.Log10(absMantissa));
+        int adjustment = (int)Math.Floor(Math.Log10(absMantissa));
         
         if (adjustment != 0)
         {
-            mantissa /= System.Math.Pow(10, adjustment);
+            mantissa /= Math.Pow(10, adjustment);
             exponent += adjustment;
         }
     }
@@ -64,11 +65,11 @@ public class BigNumber
         }
         
         // exp의 자릿수 계산
-        int expDigits = (int)System.Math.Floor(System.Math.Log10(exp));
+        int expDigits = (int)Math.Floor(Math.Log10(exp));
         
         // expDigits를 3의 배수로 조정
         long unitExponent = expDigits - (expDigits % 3);
-        double adjustedExp = exp / System.Math.Pow(10, unitExponent);
+        double adjustedExp = exp / Math.Pow(10, unitExponent);
         
         NumberUnit unit = GetUnit(unitExponent);
         return $"{adjustedExp:F2}{GetUnitSymbol(unit)}";
@@ -118,15 +119,22 @@ public class BigNumber
 
     public static BigNumber operator+(BigNumber a, BigNumber b)
     {
-        if (System.Math.Abs(a.exponent - b.exponent) > 15)
-            return a.exponent > b.exponent ? a : b;
-
         if (a.exponent == b.exponent)
             return new BigNumber(a.mantissa + b.mantissa, a.exponent);
 
-        long expDiff = System.Math.Abs(a.exponent - b.exponent);
-        double adjustedB = b.mantissa * System.Math.Pow(10, -expDiff);
-        return new BigNumber(a.mantissa + adjustedB, a.exponent);
+        BigNumber larger = a.exponent > b.exponent ? a : b;
+        BigNumber smaller = a.exponent > b.exponent ? b : a;
+        
+        long expDiff = larger.exponent - smaller.exponent;
+        
+        // 지수 차이가 15 이상이면 작은 값 무시
+        if (expDiff > 15)
+        {
+            return new BigNumber(larger.mantissa, larger.exponent);
+        }
+
+        double adjustedSmaller = smaller.mantissa * Math.Pow(10, -expDiff);
+        return new BigNumber(larger.mantissa + adjustedSmaller, larger.exponent);
     }
     public static BigNumber operator+(BigNumber a, double scalar)
     {
@@ -136,15 +144,37 @@ public class BigNumber
     
     public static BigNumber operator-(BigNumber a, BigNumber b)
     {
-        if (System.Math.Abs(a.exponent - b.exponent) > 15)
-            return a.exponent > b.exponent ? a : new BigNumber(-b.mantissa, b.exponent);
-
+        // 지수가 같으면 바로 뺄셈
         if (a.exponent == b.exponent)
             return new BigNumber(a.mantissa - b.mantissa, a.exponent);
 
-        long expDiff = System.Math.Abs(a.exponent - b.exponent);
-        double adjustedB = b.mantissa * System.Math.Pow(10, -expDiff);
-        return new BigNumber(a.mantissa - adjustedB, a.exponent);
+        long expDiff = a.exponent - b.exponent;
+        
+        // a가 b보다 훨씬 크면 (지수 차이 15 이상) - 작은 값 무시
+        if (expDiff > 15)
+        {
+            return new BigNumber(a.mantissa, a.exponent);
+        }
+        
+        // b가 a보다 훨씬 크면 (지수 차이 -15 이하) - 작은 값 무시
+        if (expDiff < -15)
+        {
+            return new BigNumber(-b.mantissa, b.exponent);
+        }
+
+        // 지수 차이가 15 이하면 정확하게 계산
+        if (expDiff > 0)
+        {
+            // a가 더 큼
+            double adjustedB = b.mantissa * Math.Pow(10, -expDiff);
+            return new BigNumber(a.mantissa - adjustedB, a.exponent);
+        }
+        else
+        {
+            // b가 더 큼
+            double adjustedA = a.mantissa * Math.Pow(10, expDiff);
+            return new BigNumber(adjustedA - b.mantissa, b.exponent);
+        }
     }
 
     public static BigNumber operator*(BigNumber a, BigNumber b)
@@ -197,7 +227,7 @@ public class BigNumber
         // 1e3 미만은 일반 숫자로 표시
         if (exponent < 3)
         {
-            return (mantissa * System.Math.Pow(10, exponent)).ToString("F0");
+            return (mantissa * Math.Pow(10, exponent)).ToString("F0");
         }
 
         // 1e93 미만: 단위 사용
@@ -209,7 +239,7 @@ public class BigNumber
             long exponentBase = exponent - exponentRemainder;
             
             NumberUnit unit = GetUnit(exponentBase);
-            double displayValue = mantissa * System.Math.Pow(10, exponentRemainder);
+            double displayValue = mantissa * Math.Pow(10, exponentRemainder);
             return $"{displayValue:F2}{GetUnitSymbol(unit)}";
         }
 
