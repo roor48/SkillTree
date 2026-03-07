@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
     
     public void StartCycle()
     {
-        cash = new BigNumber(1000);
+        cash = new BigNumber(10000);
         STOP = false;
         RefreshUI();
         StartCoroutine(Cycle());

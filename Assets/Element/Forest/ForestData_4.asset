@@ -10,14 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b8b3e925149cf594faa9a493cb1b1674, type: 3}
-  m_Name: ForestData_2
+  m_Name: ForestData_4
   m_EditorClassIdentifier: Assembly-CSharp::ElementData
-  id: 2
+  id: 4
   costs:
-  - mantissa: 3
-    exponent: 2
-  - mantissa: 4
-    exponent: 2
-  - mantissa: 5
-    exponent: 2
-  childrenIds: 0300000004000000
+  - mantissa: 1000
+    exponent: 0
+  - mantissa: 1500
+    exponent: 0
+  childrenIds: 

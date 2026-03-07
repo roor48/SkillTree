@@ -22,3 +22,10 @@ public class GameManager : MonoBehaviour
         gameController.StartCycle();
     }
 }
+
+/*
+ *  todo:
+ *      - 저장 기능
+ *      - 이펙트 추가
+ * 
+*/

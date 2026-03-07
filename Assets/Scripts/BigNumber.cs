@@ -270,7 +270,7 @@ public class BigNumber
         // 1e3 미만은 일반 숫자로 표시
         if (exponent < 3)
         {
-            return (mantissa * Math.Pow(10, exponent)).ToString("F0");
+            return (mantissa * Math.Pow(10, exponent)).ToString("F2");
         }
 
         // 1e93 미만: 단위 사용
